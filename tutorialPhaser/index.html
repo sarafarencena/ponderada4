@@ -1,0 +1,276 @@
+<!-- linguagem de marcação html -->
+<!doctype html>
+
+<!-- idioma da linguagem de marcação -->
+<html lang="en">
+
+<!-- head: executa antes da tela ser carregada e não aparece na tela do navegador -->
+
+<head>
+
+    <!-- escolhe o idioma, nesse caso o UTF-8, que é o padrão, sem acentos ou caractereres especiais -->
+    <meta charset="UTF-8" />
+
+    <!-- title: título que aparece na guia do navegador -->
+    <title>Making your first Phaser 3 Game - Part 1</title>
+
+    <!-- script src: importa o framework Phaser da web, ao invés de carregar no código, mais rápido mas só funciona com conexão a internet -->
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+
+    <!-- style: determina a estilzação, nesse caso por meio do css -->
+    <style type="text/css">
+        /* customiza o body */
+        body {
+            /* determina a margem; nesse caso, como é zero, remove a margem */
+            margin: 0;
+        }
+    </style>
+</head>
+
+<!-- body: tudo o que aparece na tela do navegador, que é visual, ou que rode em JS (no caso, Phaser); aparece após a tela criada -->
+
+<body>
+
+    <!-- script type: determina a linguagem de programação usada (coloca-se o type por boas práticas, mas o script e em site sempre vai ser JS) -->
+    <script type="text/javascript">
+
+        // var: tipo de variável, uma variável global que funciona no código inteiro
+        // config: variável do tipo dicionário, palavra: significado (chave valor)
+        var config = {
+            // Phaser.AUTO: função que identifica o tipo de elemento HTML a ser criado pelo Phaser (motor de renderização do Phaser)
+            type: Phaser.AUTO,
+
+            // determina a largura e altura, respectivamente, da resolução do elemento canvas que o Phaser irá criar
+            width: 800,
+            height: 600,
+
+            // adiciona física ao jogo
+            physics: {
+                // define o sistema de física a ser usado (se será para cima, para baixo, direita, esquerda, ...)
+                default: 'arcade',
+                // arcade: tipo plataforma (normal, como se fosse o mundo real)
+                arcade: {
+                    gravity: { y: 300 },
+                    // debug: quadrados de colisão, nesse caso é falso porque os quadrados existem mas não aparecem
+                    debug: false
+                }
+            },
+            // cena do jogo composta pelo preload, create e update, nesse caso tem apenas uma (explicar depois quando aprender no dragão)
+            scene: {
+                preload: preload,
+                create: create,
+                update: update,
+            }
+        };
+
+        // Phaser.Game: é uma classe
+        // new Phaser.Game: é uma instância da classe Phaser.Game (exemplo: classe pessoa com todos os membros do corpo, vulgo atributos da classe, pai e mãe vão gerar uma nova instância = filho, vulgo objeto)
+        // .Game: método dentro da classe Phaser
+        var game = new Phaser.Game(config);
+        // (new Phaser.Game: cria uma nova instância de um jogo em Phaser)
+
+        // preload: carrega tudo o que estiver definido dentro dele
+        function preload() {
+            // carrega a imagem de fundo
+            this.load.image('sky', 'assets/sky.png');
+            // carrega a imagem da plataforma
+            this.load.image('ground', 'assets/platform.png');
+            // carrega a imagem da estrela
+            this.load.image('star', 'assets/star.png');
+            // carrega a imagem da bomba
+            this.load.image('bomb', 'assets/bomb.png');
+            // carrega a imagem do personagem
+            this.load.spritesheet('dude', 'assets/dude.png',
+                // determina o tamanho do personagem
+                { frameWidth: 32, frameHeight: 48 }
+            );
+        }
+
+        // OBS: alt + shift + f -> identa o código
+
+        // var: cria as variáveis globais
+        var platforms;
+        var cursors;
+        var score = 0;
+        var scoreText;
+
+        // adiciona/mostra o que foi carregado no preload, seguindo uma ordem/hierarquia, ex: a estrela aparece porque ela foi adicionada depois do céu (o último adicionado aparece na frente)
+        function create() {
+            // adiciona a imagem de fundo e onde ela deve aparecer na tela de acordo com as coordenadas (se fosse 0,0 estaria aparecendo apenas 1/4 na imagem)
+            this.add.image(400, 300, 'sky');
+
+            // this.physics: significa que o sistema Arcade está sendo usado para a física do jogo
+            // staticGroup: determina e mantém grupos de plataformas estáticas como se fossem uma só
+            platforms = this.physics.add.staticGroup();
+
+            // adiciona a imagem do "chão" em uma escala x2 e comunica a nova escala
+            platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+
+            // adiciona mais imagens de plataforma
+            platforms.create(600, 400, 'ground');
+            platforms.create(50, 250, 'ground');
+            platforms.create(750, 220, 'ground');
+
+            // adiciona a sprite do personagem/player e sua posição de início do jogo
+            player = this.physics.add.sprite(100, 450, 'dude');
+
+            // adiciona a função de "quicada" do personagem/player quando cai no chão, dentro do parênteses é a potência da "quicada"
+            player.setBounce(0.2);
+
+            // adiciona barreiras a tela para que o personagem não suma
+            player.setCollideWorldBounds(true);
+
+            // adiciona colisão entre o personagem e o grupo de plataformas
+            this.physics.add.collider(player, platforms);
+
+            // adiciona animação para a esquerda
+            this.anims.create({
+                key: 'left',
+                // mostra a quantidade de framses (quadradinhos) que tem na imagem, nesse caso são 4, do zero ao três
+                frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+                // taxa de atualização de frames (FPS)
+                frameRate: 10,
+                // looping da animação
+                repeat: -1
+            });
+            // mesma lógica para a animação a direita
+
+            // adiciona animação para voltar
+            this.anims.create({
+                key: 'turn',
+                frames: [{ key: 'dude', frame: 4 }],
+                frameRate: 20
+            });
+
+            // adiciona animação para a direita
+            this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            // adiciona funções aos botões do teclado
+            cursors = this.input.keyboard.createCursorKeys();
+
+            // adiciona um grupo de estrelas dinâmicas (que se movem)
+            stars = this.physics.add.group({
+                // seleciona a imagem da estrela
+                key: 'star',
+                // quantas vezes a estrela será repetida na tela (12 no total)
+                repeat: 11,
+                // marca a distância entre as posições das estrelas
+                setXY: { x: 12, y: 0, stepX: 70 }
+            });
+
+            // percorre todas as estrelas, uma por uma
+            stars.children.iterate(function (child) {
+                // atribui um valor aleatório a "quicada" de cada uma das estrelas entre 0.4 e 0.8 (add explicação se fosse 1 ou 0)
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+
+            });
+
+            // adiciona colisão entre as estrelas e plataformas
+            this.physics.add.collider(stars, platforms);
+            // adiciona a sobreposição do personagem a estrela
+            this.physics.add.overlap(player, stars, collectStar, null, this);
+
+            // adiciona o texto de pontuação
+            scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+            // cria um grupo de bombas, assim como das estrelas e plataformas
+            bombs = this.physics.add.group();
+            // adiciona colisão entre as bombas e plataformas
+            this.physics.add.collider(bombs, platforms);
+            // adiciona colisão entre o personagem e a bomba
+            this.physics.add.collider(player, bombs, hitBomb, null, this);
+        }
+
+        // o personagem encosta na estrela e a coleciona
+        function collectStar(player, star) {
+            // a estrela some
+            star.disableBody(true, true);
+
+            // adiciona o sistema de pontuação
+            score += 10;
+            // adiciona a soma do score a cada estrela colecionada
+            scoreText.setText('Score: ' + score);
+
+            // conta quantas estrelas restam
+            if (stars.countActive(true) === 0) {
+                // percorre as estrelas uma a uma
+                stars.children.iterate(function (child) {
+                    child.enableBody(true, child.x, 0, true, true);
+                });
+
+                // if de uma linha, se () ? for verdade, realiza (), senão : realiza isso ()
+                var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                // o valor de x vai depender, se não for um, vai ser outro
+                // var x 
+                // if (player.x < 400) {
+                //     x = Phaser.Math.Between(400, 800)
+                // } else {
+                //     x = Phaser.Math.Between(0, 400)
+                // };
+
+                // cria a variável da bomba
+                var bomb = bombs.create(x, 16, 'bomb');
+                // adiciona a "quicada" à bomba
+                bomb.setBounce(1);
+                // adiciona colisão entre a bomba e a tela (bordas do jogo)
+                bomb.setCollideWorldBounds(true);
+                // define a velocidade da bomba
+                bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+            }
+        }
+
+        // se o personagem bate na bomba
+        function hitBomb(player, bomb) {
+            // a física do jogo para
+            this.physics.pause();
+            // e o personagem fica vermelho
+            player.setTint(0xff0000);
+            // inicia a animação turn no personagem
+            player.anims.play('turn');
+            // o jogo acaba
+            gameOver = true;
+        }
+
+        // update: atualiza, deixa em looping
+        function update() {
+            // verifica se o botão da seta para esquerda foi pressionado
+            if (cursors.left.isDown) {
+                // adiciona velocidade
+                player.setVelocityX(-160);
+                // inicia animação do personagem para esquerda
+                player.anims.play('left', true);
+            }
+            // verifica se o botão da seta para direita está pressionado
+            else if (cursors.right.isDown) {
+                // adiciona velocidade
+                player.setVelocityX(160);
+                // inicia animação do personagem para direita
+                player.anims.play('right', true);
+            }
+            // verifica se nenhum botão foi pressionado
+            else {
+                // deixa o player parado
+                player.setVelocityX(0);
+                // inicia a animação do personagem
+                player.anims.play('turn');
+            }
+
+            // verifica se o botão da seta 'para cima' foi pressionado e se o personagem está tocando a base
+            if (cursors.up.isDown && player.body.touching.down) {
+                // faz o personagem pular
+                player.setVelocityY(-330);
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
