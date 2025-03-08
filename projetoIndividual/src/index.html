@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <title>Projeto Individual</title>
     <style>
-        /* comentários pássaro */
+
         body {
             display: flex;
             justify-content: center;
@@ -22,6 +22,7 @@
     <script src="menu.js"></script>
 
     <script>
+        // configurações do jogo, como dimensões, tipo de jogo (plataforma) e gravidade
         const config = {
             type: Phaser.AUTO,
             width: 800,
@@ -33,9 +34,11 @@
                     debug: false
                 }
             },
+            // telas/cenas do jogo em ordem
             scene: [Menu, JogoScene]
         };
 
+        // usa o framework Phaser
         const game = new Phaser.Game(config);
     </script>
 
