@@ -16,14 +16,14 @@ class JogoScene extends Phaser.Scene {
   }
 
   create() {
-    let larguraJogo = 800;
-    let alturaJogo = window.innerHeight;
+    let gameWidth = 800;
+    let gameHeight = window.innerHeight;
 
     this.ground = this.physics.add
-      .staticImage(larguraJogo / 2, 575, "ground")
+      .staticImage(gameWidth / 2, 575, "ground")
       .setScale(1.5);
     this.add
-      .image(larguraJogo / 2, alturaJogo / 1.7, "background")
+      .image(gameWidth / 2, gameHeight / 1.7, "background")
       .setScale(1.5);
 
     const diamondsX = [50, 150, 250, 350, 450, 550, 650, 750, 850];
@@ -59,7 +59,7 @@ class JogoScene extends Phaser.Scene {
     });
 
     // Teclado
-    this.teclado = this.input.keyboard.createCursorKeys();
+    this.keyboard = this.input.keyboard.createCursorKeys();
 
     // Colisões
     this.physics.add.collider(this.player, this.ground);
@@ -84,30 +84,30 @@ class JogoScene extends Phaser.Scene {
     this.physics.add.overlap(
       this.player,
       this.diamonds,
-      this.coletarDiamante,
+      this.collectDiamonds,
       null,
       this
     );
   }
 
-  coletarDiamante(player, diamond) {
+  collectDiamonds(player, diamond) {
     diamond.disableBody(true, true); // Esconde e desativa o diamante
     this.score += 1;
     this.scoreText.setText("Score: " + this.score);
   }
 
   update() {
-    if (this.teclado.right.isDown) {
+    if (this.keyboard.right.isDown) {
       this.player.setVelocityX(150);
       this.player.flipX = false;
-    } else if (this.teclado.left.isDown) {
+    } else if (this.keyboard.left.isDown) {
       this.player.setVelocityX(-150);
       this.player.flipX = true;
     } else {
       this.player.setVelocityX(0);
     }
 
-    if (this.player.body.touching.down && this.teclado.up.isDown) {
+    if (this.player.body.touching.down && this.keyboard.up.isDown) {
       this.player.setVelocityY(-500);
     }
   }
