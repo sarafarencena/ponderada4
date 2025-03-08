@@ -31,7 +31,7 @@ class JogoScene extends Phaser.Scene {
     this.diamonds = this.physics.add.group();
     for (let i = 0; i < diamondsX.length - 1; i++) {
       let diamond = this.diamonds.create(diamondsX[i], 10, "diamond");
-      diamond.setScale(0.15).setBounce(0.7);
+      diamond.setScale(0.15).setBounce(0.5);
     }
 
     this.platform1 = this.physics.add.staticImage(75, 300, "platform1");
@@ -48,7 +48,7 @@ class JogoScene extends Phaser.Scene {
     // Jogador
     this.player = this.physics.add.sprite(400, 300, "player").setScale(2);
     this.player.setCollideWorldBounds(true);
-    this.player.body.setGravityY(300);
+    this.player.body.setGravityY(600);
 
     // Animação
     this.anims.create({
