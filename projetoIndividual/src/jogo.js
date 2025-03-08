@@ -3,6 +3,7 @@ class JogoScene extends Phaser.Scene {
   constructor() {
     super("JogoScene");
   }
+  
   // carrega os assets
   preload() {
     this.load.image("ground", "assets/ground.jpg");
@@ -15,6 +16,7 @@ class JogoScene extends Phaser.Scene {
       frameHeight: 32,
     });
   }
+
   // adiciona os assets carregados no preload
   create() {
     let gameWidth = 800;
