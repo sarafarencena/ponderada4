@@ -98,6 +98,9 @@ class JogoScene extends Phaser.Scene {
     diamond.disableBody(true, true); // player encosta no diamante e o diamante some
     this.score += 1; // player pontua a cada diamante coletado
     this.scoreText.setText("Score: " + this.score);
+    if (this.score === 8) {
+      this.scene.start("WinScene");
+    }
   }
 
   // atualiza o jogo, deixa em looping

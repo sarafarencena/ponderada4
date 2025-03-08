@@ -20,6 +20,7 @@
 <body>
     <script src="src/jogo.js"></script>
     <script src="src/menu.js"></script>
+    <script src="src/win.js"></script>
 
     <script>
         // configurações do jogo, como dimensões, tipo de jogo (plataforma) e gravidade
@@ -35,7 +36,7 @@
                 }
             },
             // telas/cenas do jogo em ordem
-            scene: [Menu, JogoScene]
+            scene: [Menu, JogoScene, WinScene]
         };
 
         // usa o framework Phaser
