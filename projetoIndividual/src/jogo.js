@@ -5,12 +5,12 @@ class JogoScene extends Phaser.Scene {
   }
   // carrega os assets
   preload() {
-    this.load.image("ground", "./assets/ground.jpg");
-    this.load.image("background", "./assets/background.jpg");
-    this.load.image("platform1", "./assets/platform1.png");
-    this.load.image("platform2", "./assets/platform2.png");
-    this.load.image("diamond", "./assets/diamond.png");
-    this.load.spritesheet("player", "./assets/player.png", {
+    this.load.image("ground", "assets/ground.jpg");
+    this.load.image("background", "assets/background.jpg");
+    this.load.image("platform1", "assets/platform1.png");
+    this.load.image("platform2", "assets/platform2.png");
+    this.load.image("diamond", "assets/diamond.png");
+    this.load.spritesheet("player", "assets/player.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
