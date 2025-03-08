@@ -26,7 +26,7 @@ class JogoScene extends Phaser.Scene {
       .image(larguraJogo / 2, alturaJogo / 1.7, "background")
       .setScale(1.5);
 
-    const diamondsX = [50, 150, 250, 350, 450, 550, 650];
+    const diamondsX = [50, 150, 250, 350, 450, 550, 650, 750, 850];
 
     this.diamonds = this.physics.add.group();
     for (let i = 0; i < diamondsX.length - 1; i++) {
